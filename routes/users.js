@@ -17,6 +17,17 @@ const VerrorsMessageFormatter = (Verrors) => {       //formats verror message
     return errorsFormatted
 }
 
+
+//sample end point
+router.get("/", async(req, res)=>{
+    try {
+        res.send("i am the root endpoint for users  with a get request")
+    } catch (error) {
+        console.log(error);
+        res.send(error)
+    }
+})
+
 //sample end point
 router.get("/sample/test", async(req, res)=>{
     try {
@@ -24,6 +35,24 @@ router.get("/sample/test", async(req, res)=>{
     } catch (error) {
         console.log(error);
         res.send(error)
+    }
+})
+
+router.post("/", async(req, res) => {
+    try {
+        res.json({info: req.body})
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("wahala dey")
+    }
+})
+
+router.post("/dababy", async(req, res) => {
+    try {
+        res.send("we up in this dababy thug life!")
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("wahala dey")
     }
 })
 
