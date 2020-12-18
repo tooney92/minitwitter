@@ -66,11 +66,12 @@ router.get('/:id', async (req, res) => {
       const post = await Post.findOne({_id: req.params.id}).populate("user_id");
       res.send(post);
     }
-    catch(err) {
+    catch(error) {
         console.log(err);
         res.status(400).send("something went wrong")
     }
 });
+
 
 //Update a Post
 router.put('/:id', async (req, res) => {
@@ -82,7 +83,7 @@ router.put('/:id', async (req, res) => {
         );
       res.send(updatedPost);
     }
-    catch(err) {
+    catch(error) {
      res.status(500).json({ error: error.message });  
     }
 });
@@ -94,7 +95,7 @@ router.delete('/:id', async (req, res) => {
       const deletedPost = await Post.findByIdAndDelete({ _id: req.params.id });
       res.send(deletedPost);
     }
-    catch(err) {
+    catch(error) {
         res.status(500).json({ error: error.message });
     }
 });
