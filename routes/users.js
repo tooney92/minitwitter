@@ -36,29 +36,25 @@ const User = require("../models/user")
 //start your code from here
 //Signup
 router.post('/signup', async (req, res) => {
-    const { username, email, password } = req.body;
     try {
+        const { password, email } = req.body;
         if(password.length < 8) 
         return res.status(400).json({ msg: 'Password must be at least 8 characters'});
     
         const existingUser = await User.findOne({ email: email });
         if(existingUser) 
         return res.status(400).json({ msg: 'User already exists.'});
-        if(username) return username = email;
     
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password, salt);
-        const newUser = new User({
-            email,
-            password: passwordHash,
-            username
-        });
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);  
+        req.body.password = passwordHash
+        const newUser = new User(req.body)
+        await newUser.save();
+        res.status(201).json(newUser);  
         }
-        catch(err) {
+        catch(error) {
             console.log(error)
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: error});
         }
 });
 
@@ -68,8 +64,8 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
   
-        if(!email || !password) 
-        return res.status(400).json({ msg: 'Please enter required fields.' });
+        // if(!email || !password) 
+        // return res.status(400).json({ msg: 'Please enter required fields.' });
   
         const user = await User.findOne({ email: email });
         if(!user) return res.status(400).json({ msg: 'Account does not exist, Please Register.' });
@@ -77,13 +73,13 @@ router.post('/login', async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if(!match) return res.status(400).json({ msg: 'Please enter the correct password for this account.' });
   
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-        res.json({ 
-          token,
-          user: {
-              id: user._id,
-              name: user.name
-          }
+        const token = await jwt.sign({ info: user}, process.env.JWT_SECRET, {expiresIn: 60*60*24}, async(err,token) =>{
+            if(err)
+            {
+                console.log(err);
+                return res.status(500).send("opps something went wrong")
+            }
+            return res.json({user,token})
         });
       }
       catch(error) {
