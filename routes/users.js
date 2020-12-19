@@ -89,9 +89,9 @@ router.post('/login', async (req, res) => {
 
 
 //View Details
-router.get('/:userid', webtoken.verifyToken, async (req, res) => {
+router.get('/', webtoken.verifyToken, async (req, res) => {
     try {
-      const userDetails = await User.findById({_id: req.params.userid});
+      const userDetails = await User.findOne(req.user);
       res.send(userDetails);
     }
     catch(error) {
@@ -101,9 +101,9 @@ router.get('/:userid', webtoken.verifyToken, async (req, res) => {
 
 
 //Delete Details
-router.delete('/:userid', webtoken.verifyToken, async (req, res) => {
+router.delete('/', webtoken.verifyToken, async (req, res) => {
     try {
-      const user = await User.findByIdAndDelete({ _id: req.params.userid })
+      const user = await User.deleteOne(req.user)
       res.send(user);
     }
     catch(error) {
