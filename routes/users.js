@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
 //View Details
 router.get('/', webtoken.verifyToken, async (req, res) => {
     try {
-      const userDetails = await User.findOne(req.user);
+      const userDetails = await User.findOne({ _id: req.user._id });
       res.send(userDetails);
     }
     catch(error) {
@@ -103,7 +103,7 @@ router.get('/', webtoken.verifyToken, async (req, res) => {
 //Delete Details
 router.delete('/', webtoken.verifyToken, async (req, res) => {
     try {
-      const user = await User.deleteOne(req.user)
+      const user = await User.deleteOne({ _id: req.user._id })
       res.send(user);
     }
     catch(error) {
