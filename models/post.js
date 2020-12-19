@@ -7,8 +7,10 @@ const postSchema = mongoose.Schema({
         trim: true,
         required: true
     },
-    user_id: {
-       type: String   
+    user_id:{
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required:true
     },   
 },{
     timestamps: true

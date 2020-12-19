@@ -35,26 +35,26 @@ const VerrorsMessageFormatter = (Verrors) => {       //formats verror message
 //Create Posts
 router.post('/', webtoken.verifyToken, async (req, res) => {
     try {
-      const { title } = req.body;
-      const newPost = new Post({
-        title
-      })
-    const savedPost = await newPost.save()
-    res.json(savedPost)
+
+    req.body.user_id = req.user._id
+    const newPost = new Post(req.body)
+    await newPost.save()
+    // console.log(req.user)
+    res.send(newPost)
     }
-    catch(err) {
+    catch(error) {
       res.status(500).json({ error: error.message });
     }
 });
 
 
 //Get All Posts
-router.get('/', async (req, res) => {
+router.get('/', webtoken.verifyToken, async (req, res) => {
     try {
-     const posts = await Post.find();
+     const posts = await Post.find({user_id: req.user._id}).populate("user_id");
      res.json(posts);
     }
-    catch(err) {
+    catch(error) {
      res.status(500).json({ error: error.message });
     }
 });
@@ -63,13 +63,15 @@ router.get('/', async (req, res) => {
 //Get a specific Post
 router.get('/:id', async (req, res) => {
     try {
-      const post = await Post.findById(req.params.id);
+      const post = await Post.findOne({_id: req.params.id}).populate("user_id");
       res.send(post);
     }
-    catch(err) {
-        
+    catch(error) {
+        console.log(err);
+        res.status(400).send("something went wrong")
     }
 });
+
 
 //Update a Post
 router.put('/:id', async (req, res) => {
@@ -81,7 +83,7 @@ router.put('/:id', async (req, res) => {
         );
       res.send(updatedPost);
     }
-    catch(err) {
+    catch(error) {
      res.status(500).json({ error: error.message });  
     }
 });
@@ -93,7 +95,7 @@ router.delete('/:id', async (req, res) => {
       const deletedPost = await Post.findByIdAndDelete({ _id: req.params.id });
       res.send(deletedPost);
     }
-    catch(err) {
+    catch(error) {
         res.status(500).json({ error: error.message });
     }
 });

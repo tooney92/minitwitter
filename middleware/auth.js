@@ -7,11 +7,11 @@ module.exports.verifyToken = async function (req, res, next){
         return res.status(401).json({error: 'Access Denied, please log in'});
     }else{
         try{
-            const {data} = jwt.verify(token, process.env.token_secret)
-            if(!data){
+            const {info} = await jwt.verify(token, process.env.JWT_SECRET)
+            if(!info){
                 return res.status(401).json({error: 'Access Denied'})
             }
-            req.user = data
+            req.user = info
             next()
         }catch(err){
             console.log(err);
